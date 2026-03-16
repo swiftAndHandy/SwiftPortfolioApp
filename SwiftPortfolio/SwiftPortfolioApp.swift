@@ -10,6 +10,7 @@ import SwiftUI
 
 @main
 struct SwiftPortfolioApp: App {
+    @State private var appState = AppState()
     
     let container: ModelContainer
     
@@ -25,8 +26,15 @@ struct SwiftPortfolioApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationSplitView {
+                SidebarView()
+            } content: {
+                ContentView()
+            } detail: {
+                DetailView()
+            }
         }
         .modelContainer(container)
+        .environment(appState)
     }
 }

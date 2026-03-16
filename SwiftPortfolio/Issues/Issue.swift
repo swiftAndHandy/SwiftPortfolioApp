@@ -19,7 +19,7 @@ class Issue {
     var modificationDate: Date = Date.now
     var tags: [Tag]?
     
-    init(title: String, content: String, priority: Int, completed: Bool, tags: [Tag]?) {
+    init(title: String, content: String, priority: Int, completed: Bool, tags: [Tag]? = []) {
         self.title = title
         self.content = content
         self.priority = priority
