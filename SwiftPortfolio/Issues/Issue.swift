@@ -10,16 +10,16 @@ import SwiftData
 
 @Model
 class Issue {
-    @Relationship(deleteRule: .nullify) var tags: [Tag]
+       
+    var title: String = ""
+    var content: String = ""
+    var priority: Int = 0
+    var completed: Bool = false
+    var creationDate: Date = Date.now
+    var modificationDate: Date = Date.now
+    var tags: [Tag]?
     
-    var title: String
-    var content: String
-    var priority: Int16
-    var completed: Bool
-    var creationDate: Date
-    var modificationDate: Date
-    
-    init(title: String, content: String, priority: Int16, completed: Bool, tags: [Tag] = []) {
+    init(title: String, content: String, priority: Int, completed: Bool, tags: [Tag]?) {
         self.title = title
         self.content = content
         self.priority = priority

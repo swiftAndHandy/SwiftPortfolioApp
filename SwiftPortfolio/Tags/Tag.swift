@@ -11,8 +11,8 @@ import SwiftData
 @Model
 class Tag {
     var id = UUID()
-    var name: String
-    @Relationship(deleteRule: .nullify, inverse: \Issue.tags) var issues: [Issue]
+    var name: String = ""
+    @Relationship(deleteRule: .nullify, inverse: \Issue.tags) var issues: [Issue]?
     
     init(name: String, issues: [Issue] = []) {
         self.name = name

@@ -10,12 +10,14 @@ import SwiftUI
 
 @main
 struct SwiftPortfolioApp: App {
+    
     let container: ModelContainer
     
     init() {
         do {
+            let schema = Schema([Issue.self, Tag.self])
             let config = ModelConfiguration(cloudKitDatabase: .automatic)
-            container = try ModelContainer(for: Issue.self, Tag.self, configurations: config)
+            container = try ModelContainer(for: schema, configurations: config)
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
