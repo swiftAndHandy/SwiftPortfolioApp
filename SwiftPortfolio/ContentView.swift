@@ -9,8 +9,9 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(AppState.self) var appState
-    @Query var allIssues: [Issue]
+    @Environment(AppState.self) private var appState
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Issue.title) var allIssues: [Issue]
     
     var issues: [Issue] {
         let filter = appState.selectedFilter ?? .all
@@ -29,8 +30,16 @@ struct ContentView: View {
     var body: some View {
         List {
             ForEach(issues) { issue in
-                Text(issue.title)
+                IssueRowView(issue: issue)
             }
+            .onDelete(perform: delete)
+        }
+    }
+    
+    func delete(_ offsets: IndexSet) {
+        for offset in offsets {
+            let item = issues[offset]
+            modelContext.delete(item)
         }
     }
 }

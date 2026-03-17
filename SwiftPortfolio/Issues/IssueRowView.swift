@@ -17,10 +17,11 @@ struct IssueRowView: View {
             HStack {
                 Image(systemName: "exclamationmark.circle")
                     .imageScale(.large)
-                    .opacity(issue.priority == 2 ? 1: 0)
+                    .opacity(issue.priority == 2 ? 1 : 0)
                 
                 VStack(alignment: .leading) {
                     Text(issue.title)
+                        .foregroundStyle(.primary)
                         .font(.headline)
                         .lineLimit(1)
                     
