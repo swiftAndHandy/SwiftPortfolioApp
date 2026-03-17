@@ -10,9 +10,14 @@ import SwiftData
 
 @Model
 class Tag {
+    @Relationship(deleteRule: .nullify, inverse: \Issue.tags) var issues: [Issue]?
+    
     var id = UUID()
     var name: String = ""
-    @Relationship(deleteRule: .nullify, inverse: \Issue.tags) var issues: [Issue]?
+    
+    var activeIssues: [Issue] {
+        (issues ?? []).filter { !$0.completed }
+    }
     
     init(name: String, issues: [Issue] = []) {
         self.name = name

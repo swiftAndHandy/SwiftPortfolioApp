@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 class Issue {
-       
+    var id = UUID()
     var title: String = ""
     var content: String = ""
     var priority: Int = 0

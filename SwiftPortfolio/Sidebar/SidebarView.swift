@@ -36,6 +36,7 @@ struct SidebarView: View {
                 ForEach(tagFilters) { filter in
                     NavigationLink(value: filter) {
                         Label(filter.name, systemImage: filter.icon)
+                            .badge(filter.tag?.activeIssues.count ?? 0)
                     }
                 }
             }
