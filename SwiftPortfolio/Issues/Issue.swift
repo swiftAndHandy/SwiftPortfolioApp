@@ -19,6 +19,18 @@ class Issue {
     var modificationDate: Date = Date.now
     var tags: [Tag]?
     
+    var issueStatus: String {
+        completed ? "Closed" : "Open"
+    }
+    
+    var tagList: String {
+        guard let tags else { return "No tags" }
+        if tags.isEmpty {
+            return "No tags"
+        }
+        return tags.sorted().map(\.name).formatted()
+    }
+    
     init(title: String, content: String, priority: Int, completed: Bool, tags: [Tag]? = []) {
         self.title = title
         self.content = content
