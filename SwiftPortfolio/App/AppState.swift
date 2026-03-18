@@ -10,4 +10,5 @@ import Foundation
 @Observable
 class AppState {
     var selectedFilter: Filter? = Filter.all
+    var selectedIssue: Issue?
 }

@@ -28,7 +28,8 @@ struct ContentView: View {
     }
     
     var body: some View {
-        List {
+        @Bindable var appState = appState
+        List(selection: $appState.selectedIssue) {
             ForEach(issues) { issue in
                 IssueRowView(issue: issue)
             }
