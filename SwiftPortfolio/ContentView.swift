@@ -40,6 +40,9 @@ struct ContentView: View {
     func delete(_ offsets: IndexSet) {
         for offset in offsets {
             let item = issues[offset]
+            if appState.selectedIssue == item {
+                appState.selectedIssue = nil
+            }
             modelContext.delete(item)
         }
     }
