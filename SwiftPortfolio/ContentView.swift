@@ -12,9 +12,6 @@ struct ContentView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Issue.title) var allIssues: [Issue]
-    @Query(sort: \Tag.name) var allTags: [Tag]
-    
-    @State private var suggestedTokens = [Tag]()
     
     var issues: [Issue] {
         let filter = appState.selectedFilter ?? .all
@@ -27,14 +24,6 @@ struct ContentView: View {
         } else {
             result = allIssues.filter { issue in
                 issue.modificationDate > filter.minModificationDate
-            }
-        }
-        
-        if !appState.filterTokens.isEmpty {
-            result = result.filter { issue in
-                appState.filterTokens.allSatisfy { token in
-                    issue.tags?.contains(token) ?? false
-                }
             }
         }
         
@@ -57,18 +46,7 @@ struct ContentView: View {
             }
             .onDelete(perform: delete)
         }
-        .searchable(
-            text: $appState.filterText,
-            tokens: $appState.filterTokens,
-            suggestedTokens: $suggestedTokens,
-            prompt: "Filter issues, or type # to add tags"
-        ) { tag in
-            Text(tag.name)
-        }
-        .onChange(of: appState.filterText) {
-            suggestedTokens = appState.suggestedFilterTokens(from: allTags)
-            print("suggestedTokens count: \(suggestedTokens.count)")
-        }
+        .searchable(text: $appState.filterText, prompt: "Filter issues, or type # to add tags")
     }
     
     func delete(_ offsets: IndexSet) {
