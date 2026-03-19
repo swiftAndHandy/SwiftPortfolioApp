@@ -12,19 +12,41 @@ struct ContentView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Issue.title) var allIssues: [Issue]
+    @Query(sort: \Tag.name) var allTags: [Tag]
+    
+    @State private var suggestedTokens = [Tag]()
     
     var issues: [Issue] {
         let filter = appState.selectedFilter ?? .all
+        var result: [Issue]
         
         if let tag = filter.tag {
-            return allIssues.filter { issue in
+            result = allIssues.filter { issue in
                 issue.tags?.contains(tag) ?? false
             }
         } else {
-            return allIssues.filter { issue in
+            result = allIssues.filter { issue in
                 issue.modificationDate > filter.minModificationDate
             }
         }
+        
+        if !appState.filterTokens.isEmpty {
+            result = result.filter { issue in
+                appState.filterTokens.allSatisfy { token in
+                    issue.tags?.contains(token) ?? false
+                }
+            }
+        }
+        
+        let trimmed = appState.filterText.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty && !trimmed.starts(with: "#") {
+            result = result.filter { issue in
+                issue.title.localizedCaseInsensitiveContains(trimmed) ||
+                issue.content.localizedCaseInsensitiveContains(trimmed)
+            }
+        }
+        
+        return result
     }
     
     var body: some View {
@@ -34,6 +56,18 @@ struct ContentView: View {
                 IssueRowView(issue: issue)
             }
             .onDelete(perform: delete)
+        }
+        .searchable(
+            text: $appState.filterText,
+            tokens: $appState.filterTokens,
+            suggestedTokens: $suggestedTokens,
+            prompt: "Filter issues, or type # to add tags"
+        ) { tag in
+            Text(tag.name)
+        }
+        .onChange(of: appState.filterText) {
+            suggestedTokens = appState.suggestedFilterTokens(from: allTags)
+            print("suggestedTokens count: \(suggestedTokens.count)")
         }
     }
     
