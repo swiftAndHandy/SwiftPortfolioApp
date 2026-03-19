@@ -11,7 +11,8 @@ import SwiftUI
 struct ContentView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Issue.title) var allIssues: [Issue]
+    @Query(sort: \Issue.title) private var allIssues: [Issue]
+    @Query(sort: \Tag.name) private var allTags: [Tag]
     
     var issues: [Issue] {
         let filter = appState.selectedFilter ?? .all
@@ -27,6 +28,14 @@ struct ContentView: View {
             }
         }
         
+        if !appState.filterTokens.isEmpty {
+            result = result.filter { issue in
+                appState.filterTokens.allSatisfy { token in
+                    issue.tags?.contains(token) ?? false
+                }
+            }
+        }
+        
         let trimmed = appState.filterText.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty && !trimmed.starts(with: "#") {
             result = result.filter { issue in
@@ -38,6 +47,10 @@ struct ContentView: View {
         return result
     }
     
+    var suggestedTokens: [Tag] {
+        appState.suggestedFilterTokens(from: allTags)
+    }
+    
     var body: some View {
         @Bindable var appState = appState
         List(selection: $appState.selectedIssue) {
@@ -46,7 +59,25 @@ struct ContentView: View {
             }
             .onDelete(perform: delete)
         }
-        .searchable(text: $appState.filterText, prompt: "Filter issues, or type # to add tags")
+        .searchable(
+            text: $appState.filterText,
+            tokens: $appState.filterTokens,
+            prompt: "Filter issues, or type # to add tags"
+        ) { tag in
+            Text(tag.name)
+        }
+        .searchSuggestions {
+            if appState.filterText.starts(with: "#") {
+                ForEach(suggestedTokens) { tag in
+                    Button {
+                        appState.filterTokens.append(tag)
+                        appState.filterText = ""
+                    } label: {
+                        Label(tag.name, systemImage: "tag")
+                    }
+                }
+            }
+        }
     }
     
     func delete(_ offsets: IndexSet) {
